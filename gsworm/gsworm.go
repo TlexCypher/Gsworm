@@ -50,6 +50,7 @@ func (g *Gsworm) Create(table string, cols []string, types []string) error {
 		/* TODO: Wrap table declaration error */
 		return err
 	}
+	log.Printf("Success to create table %v\n", table)
 	return nil
 }
 
@@ -67,4 +68,14 @@ func (g *Gsworm) genColsDeclaration(table string, cols []string, types []string)
 		cldc += types[i]
 	}
 	return cldc, nil
+}
+
+func (g *Gsworm) Drop(table string) error {
+	d := fmt.Sprintf("DROP TABLE %v\n", table)
+	if _, err := g.DB.Exec(d); err != nil {
+		log.Printf("Failed to drop table. Table:%v\n", table)
+		return err
+	}
+	log.Printf("Success to drop table. Table:%v\n", table)
+	return nil
 }

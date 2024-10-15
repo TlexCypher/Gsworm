@@ -45,4 +45,7 @@ func main() {
 	if err := g.Create("test1", cols, types); err != nil {
 		log.Fatalf("Failed to create table.")
 	}
+	if err := g.Drop("test1"); err != nil {
+		log.Fatalf("Failed to drop table.")
+	}
 }
