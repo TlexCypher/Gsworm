@@ -32,6 +32,7 @@ func main() {
 		Driver: env.Driver,
 		Dsn:    env.Dsn,
 	})
+	defer g.Close()
 
 	if err != nil {
 		log.Fatalf("Failed to connect with database.\nError:%v\n", err)
