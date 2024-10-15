@@ -20,8 +20,8 @@ func loadEnv() *Env {
 		log.Fatalln("Falied to load dotenv.")
 	}
 	env := &Env{
-		Driver: os.Getenv("Driver"),
-		Dsn:    os.Getenv("Dsn"),
+		Driver: os.Getenv("DRIVER"),
+		Dsn:    os.Getenv("DSN"),
 	}
 	return env
 }
@@ -29,8 +29,8 @@ func loadEnv() *Env {
 func main() {
 	env := loadEnv()
 	g, err := gsworm.Open(&gsworm.Config{
-		Driver: env.Dsn,
-		Dsn:    env.Driver,
+		Driver: env.Driver,
+		Dsn:    env.Dsn,
 	})
 
 	if err != nil {

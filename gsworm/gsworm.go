@@ -43,7 +43,7 @@ func (g *Gsworm) Create(table string, cols []string, types []string) error {
 	if err != nil {
 		log.Fatalf("Number of column and those of types should be equal. Columns:%v, Types:%v\n", len(cols), len(types))
 	}
-	create := fmt.Sprintf("CREATE TABLE %v (%v);\n", table, cldc)
+	create := fmt.Sprintf("CREATE TABLE IF NOT EXISTS %v (%v);\n", table, cldc)
 	_, err = g.DB.Exec(create)
 	if err != nil {
 		log.Printf("Failed to execute create table query. Published raw query is %v\nError:%v\n", create, err)
