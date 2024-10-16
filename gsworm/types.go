@@ -26,7 +26,7 @@ type BInt struct {
 }
 
 func VARCHAR(size int32) VChar {
-	return VChar{sqlType: SQLType(fmt.Sprintf("VARCHAR(%v)", size)), Size: size, Value: nil, capacity: size}
+	return VChar{sqlType: SQLType(fmt.Sprintf("VARCHAR(%v)", size)), Size: 0, Value: nil, capacity: size}
 }
 
 func (vc VChar) SqlType() SQLType {

@@ -26,7 +26,7 @@ func (g *Gsworm) Close() error {
 	return nil
 }
 
-func (g *Gsworm) Create(table string, cols []string, types []GswType) error {
+func (g *Gsworm) Create(table string, cols []string, types []GswType, s *Session) error {
 	cldc, err := g.genColsDeclaration(table, cols, types)
 	if err != nil {
 		log.Fatalf("Number of column and those of types should be equal. Columns:%v, Types:%v\n", len(cols), len(types))
@@ -39,6 +39,8 @@ func (g *Gsworm) Create(table string, cols []string, types []GswType) error {
 		return err
 	}
 	log.Printf("Success to create table %v\n", table)
+	s.ExistTable[table] = true
+
 	return nil
 }
 
@@ -67,20 +69,34 @@ func (g *Gsworm) genColsDeclaration(table string, cols []string, types []GswType
 	return cldc, nil
 }
 
-func (g *Gsworm) Drop(table string) error {
+func (g *Gsworm) Drop(table string, s *Session) error {
 	d := fmt.Sprintf("DROP TABLE %v\n", table)
 	if _, err := g.DB.Exec(d); err != nil {
 		log.Printf("Failed to drop table. Table:%v\n", table)
 		return err
 	}
 	log.Printf("Success to drop table. Table:%v\n", table)
+	s.ExistTable[table] = false
+
 	return nil
 }
 
-// func (g *Gsworm) Select(table string, colmuns: []string) error {
-//
-// }
-//
-// func (g *Gsworm) Insert(table string, columns: []string, values: []string) {
-//
-// }
+func (g *Gsworm) Insert(table string, columns []string, values []any, s *Session) error {
+	if len(columns) != len(values) {
+		log.Fatalf("The number of columns and those of values are not equal when you call insert method.")
+	}
+	if !s.ExistTable[table] {
+		log.Fatalf("%v table does not exist.\n", table)
+	}
+	insert := g.genInsertStatement(table, columns, values)
+	log.Printf("Success to insert records into %v\n", table)
+	return nil
+}
+
+func (g *Gsworm) genInsertStatement(table string, columns []string, values []any) string {
+	//INSERT INTO ${table} (...columns) (...values)
+	for i := range len(columns) {
+		col, val := columns[i], values[i]
+		//colの型とvalueの型が違う場合, errorが必要 --> tableのメタ情報を持っとく必要がある
+	}
+}
