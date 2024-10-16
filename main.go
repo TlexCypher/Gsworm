@@ -38,7 +38,7 @@ func main() {
 		log.Fatalf("Failed to connect with database.\nError:%v\n", err)
 	}
 	cols := []string{"primary_id", "col1"}
-	types := []string{"VARCHAR(255)", "VARCHAR(255)"}
+	types := []gsworm.GswType{gsworm.VARCHAR(255), gsworm.BIGINT()}
 
 	err = g.DB.Ping()
 

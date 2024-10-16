@@ -10,18 +10,6 @@ type Gsworm struct {
 	DB *sql.DB
 }
 
-type GswColType interface {
-	Column()
-}
-
-type Number struct{}
-
-func (n *Number) Column() {}
-
-type String struct{}
-
-func (s *String) Column() {}
-
 func Open(c *Config) (*Gsworm, error) {
 	db, err := sql.Open(c.Driver, c.Dsn)
 	if err != nil {
@@ -38,7 +26,7 @@ func (g *Gsworm) Close() error {
 	return nil
 }
 
-func (g *Gsworm) Create(table string, cols []string, types []string) error {
+func (g *Gsworm) Create(table string, cols []string, types []GswType) error {
 	cldc, err := g.genColsDeclaration(table, cols, types)
 	if err != nil {
 		log.Fatalf("Number of column and those of types should be equal. Columns:%v, Types:%v\n", len(cols), len(types))
@@ -54,7 +42,7 @@ func (g *Gsworm) Create(table string, cols []string, types []string) error {
 	return nil
 }
 
-func (g *Gsworm) genColsDeclaration(table string, cols []string, types []string) (string, error) {
+func (g *Gsworm) genColsDeclaration(table string, cols []string, types []GswType) (string, error) {
 	if len(cols) != len(types) {
 		return "", &GswTblDeclarationErr{Table: table}
 	}
@@ -65,7 +53,16 @@ func (g *Gsworm) genColsDeclaration(table string, cols []string, types []string)
 		}
 		cldc += col
 		cldc += " "
-		cldc += types[i]
+		switch t := types[i].(type) {
+		case VChar:
+			cldc += string(t.SqlType())
+		case Int:
+			cldc += string(t.SqlType())
+		case BInt:
+			cldc += string(t.SqlType())
+		default:
+			log.Fatalf("Unknown type.")
+		}
 	}
 	return cldc, nil
 }
@@ -79,3 +76,11 @@ func (g *Gsworm) Drop(table string) error {
 	log.Printf("Success to drop table. Table:%v\n", table)
 	return nil
 }
+
+// func (g *Gsworm) Select(table string, colmuns: []string) error {
+//
+// }
+//
+// func (g *Gsworm) Insert(table string, columns: []string, values: []string) {
+//
+// }
