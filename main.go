@@ -38,11 +38,17 @@ func main() {
 		log.Fatalf("Failed to connect with database.\nError:%v\n", err)
 	}
 	cols := []string{"primary_id", "col1"}
-	types := []string{"VARCHAR(255)", "VARCHAR(255)"}
+	types := []gsworm.GswType{gsworm.VARCHAR(255), gsworm.BIGINT()}
 
 	err = g.DB.Ping()
+	s := &gsworm.Session{
+		ExistTable: make(map[string]bool),
+	}
 
-	if err := g.Create("test1", cols, types); err != nil {
+	if err := g.Create("test1", cols, types, s); err != nil {
 		log.Fatalf("Failed to create table.")
+	}
+	if err := g.Drop("test1", s); err != nil {
+		log.Fatalf("Failed to drop table.")
 	}
 }
