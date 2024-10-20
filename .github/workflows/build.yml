@@ -1,0 +1,15 @@
+name: Build all codes
+on:
+  push:
+
+jobs:
+  build-all-codes:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+      - name: Build code
+        run: |
+          make build
+
+

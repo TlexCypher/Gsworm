@@ -81,22 +81,22 @@ func (g *Gsworm) Drop(table string, s *Session) error {
 	return nil
 }
 
-func (g *Gsworm) Insert(table string, columns []string, values []any, s *Session) error {
-	if len(columns) != len(values) {
-		log.Fatalf("The number of columns and those of values are not equal when you call insert method.")
-	}
-	if !s.ExistTable[table] {
-		log.Fatalf("%v table does not exist.\n", table)
-	}
-	insert := g.genInsertStatement(table, columns, values)
-	log.Printf("Success to insert records into %v\n", table)
-	return nil
-}
+// func (g *Gsworm) Insert(table string, columns []string, values []any, s *Session) error {
+// 	if len(columns) != len(values) {
+// 		log.Fatalf("The number of columns and those of values are not equal when you call insert method.")
+// 	}
+// 	if !s.ExistTable[table] {
+// 		log.Fatalf("%v table does not exist.\n", table)
+// 	}
+// 	insert := g.genInsertStatement(table, columns, values)
+// 	log.Printf("Success to insert records into %v\n", table)
+// 	return nil
+// }
 
-func (g *Gsworm) genInsertStatement(table string, columns []string, values []any) string {
-	//INSERT INTO ${table} (...columns) (...values)
-	for i := range len(columns) {
-		col, val := columns[i], values[i]
-		//colの型とvalueの型が違う場合, errorが必要 --> tableのメタ情報を持っとく必要がある
-	}
-}
+// func (g *Gsworm) genInsertStatement(table string, columns []string, values []any) string {
+// 	// INSERT INTO ${table} (...columns) (...values)
+// 	for i := range len(columns) {
+// 		col, val := columns[i], values[i]
+// 		//colの型とvalueの型が違う場合, errorが必要 --> tableのメタ情報を持っとく必要がある
+// 	}
+// }
