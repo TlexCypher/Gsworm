@@ -19,6 +19,6 @@ jobs:
           make build
       - run: |
           gh release create "${VERSION}" --title "${VERSION}" --generate-notes
-          gh release upload "${VERSION}" "${RUNNER_TEMP}/main"
+          gh release upload "${VERSION}" main
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
