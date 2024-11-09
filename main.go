@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/TlexCypher/gsworm/gsworm"
+	"github.com/TlexCypher/gsworm/internal/gsworm"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
 
