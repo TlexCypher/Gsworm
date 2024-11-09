@@ -3,6 +3,7 @@ package gsworm
 import (
 	"bytes"
 	"database/sql"
+	"errors"
 	"fmt"
 	"log"
 	"reflect"
@@ -93,17 +94,21 @@ func (g *Gsworm) Drop(table string, s *Session) error {
 	return nil
 }
 
-func (g *Gsworm) Insert(table string, columns []string, values []GswType, s *Session) error {
+func (g *Gsworm) Insert(table string, columns []string, values []string, s *Session) error {
 	if len(columns) != len(values) {
 		log.Fatalf("The number of columns and those of values are not equal when you call insert method.")
 	}
 	if !s.ExistTable[table] {
 		log.Fatalf("%v table does not exist.\n", table)
 	}
-	if !g.typeAssertion(columns, values) {
+	cvs, err := g.convGswTypes(table, values)
+	if err != nil {
+		log.Fatalf("Failed to converion into GswType.")
+	}
+	if !g.typeAssertion(columns, cvs) {
 		log.Fatalf("Failed to type assertion. Some value's type might not be suitable.")
 	}
-	insert, err := g.genInsertStatement(table, columns, values)
+	insert, err := g.genInsertStatement(table, columns, cvs)
 	if err != nil {
 		return err
 	}
@@ -113,6 +118,37 @@ func (g *Gsworm) Insert(table string, columns []string, values []GswType, s *Ses
 	}
 	log.Printf("Success to insert records into %v\n", table)
 	return nil
+}
+
+func (g *Gsworm) convGswTypes(table string, values []string) ([]GswType, error) {
+	s := g.Schemas[table]
+	gsw := make([]GswType, len(values))
+	for i, value := range values {
+		if reflect.TypeOf(value) != s.types[i].RefType() {
+			return nil, errors.New("Type assertion failed.")
+		}
+		t := s.types[i]
+		if reflect.TypeOf(t) == reflect.TypeOf(Int{}) {
+			val, err := strconv.Atoi(value)
+			if err != nil {
+				log.Printf("Failed to value into GswType.Int. Actual input:%v\n", val)
+				return nil, err
+			}
+			gsw[i] = INT().val(int32(val))
+		}
+		if reflect.TypeOf(t) == reflect.TypeOf(BInt{}) {
+			val, err := strconv.Atoi(value)
+			if err != nil {
+				log.Printf("Failed to value into GswType.Bint. Actual input:%v\n", val)
+				return nil, err
+			}
+			gsw[i] = BINT().val(int64(val))
+		}
+		if reflect.TypeOf(t) == reflect.TypeOf(VChar{}) {
+			gsw[i] = VCHAR(int32(len(value))).val(value)
+		}
+	}
+	return gsw, nil
 }
 
 func (g *Gsworm) typeAssertion(columns []string, values []GswType) bool {

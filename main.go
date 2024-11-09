@@ -38,7 +38,7 @@ func main() {
 		log.Fatalf("Failed to connect with database.\nError:%v\n", err)
 	}
 	cols := []string{"primary_id", "col1"}
-	types := []gsworm.GswType{gsworm.VARCHAR(255), gsworm.BIGINT()}
+	types := []gsworm.GswType{gsworm.VCHAR(255), gsworm.BINT()}
 
 	err = g.DB.Ping()
 	s := &gsworm.Session{
@@ -51,4 +51,5 @@ func main() {
 	if err := g.Drop("test1", s); err != nil {
 		log.Fatalf("Failed to drop table.")
 	}
+	g.Insert("test1", []string{"primary_id", "col1"}, []string{"fjoadfja", "こんにちは"}, s)
 }
